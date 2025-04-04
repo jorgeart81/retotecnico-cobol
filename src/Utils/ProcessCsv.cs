@@ -1,4 +1,5 @@
 using System;
+using System.Globalization;
 using RetoTecnicoCobol.src.Models;
 
 namespace RetoTecnicoCobol.src.Utils;
@@ -24,7 +25,7 @@ public static class ProcessCsv
                 {
                     Id = int.Parse(row[0]),
                     Type = row[1],
-                    Amount = decimal.Parse(row[2])
+                    Amount = decimal.Parse(row[2], CultureInfo.InvariantCulture)
                 };
                 transactions.Add(transaction);
             }
