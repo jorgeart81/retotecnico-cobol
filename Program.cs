@@ -1,61 +1,110 @@
 ﻿// See https://aka.ms/new-console-template for more information
-using System.Text;
 using RetoTecnicoCobol.src.Models;
 using RetoTecnicoCobol.src.Services;
 using RetoTecnicoCobol.src.Utils;
 
-Console.WriteLine("Bienvenido a Reporte de Transacciones");
+Console.WriteLine();
+Console.WriteLine("*****************************************");
+Console.WriteLine("* Bienvenido a Reporte de Transacciones *");
+Console.WriteLine("*****************************************");
 
 List<TransactionModel> transactions = [];
-bool fileExists = false;
-int fileExistCount = 0;
+bool dataExists = false;
+bool wantContinue = true;
+int failureCount = 0;
 
-while (!fileExists)
+do
 {
-    Console.WriteLine("");
+    while (!dataExists)
+    {
+        var fileLocation = FileLocationValidation();
+
+        if (string.IsNullOrEmpty(fileLocation))
+        {
+            RetryMenu();
+        }
+        else
+        {
+            transactions = ProcessCsv.LoadFile(fileLocation);
+
+            if (transactions.Count > 0) dataExists = true;
+            else Console.WriteLine("El archivo no fue procesado.");
+        }
+    }
+
+    if (transactions.Count > 0)
+    {
+        TransactionReport report = new(transactions);
+
+        Console.WriteLine();
+        Console.WriteLine("Reporte de Transacciones");
+        Console.WriteLine("--------------------------------------------");
+        Console.WriteLine($"Balance Final: {report.FinalBalance:F2}");
+        Console.WriteLine($"Transacción de Mayor Monto: ID {report?.HigherAmountTransaction?.Id} - {report?.HigherAmountTransaction?.Amount:F2}");
+        Console.WriteLine($"Conteo de Transacciones: Crédito: {report?.CreditTransactionCount} Débito: {report?.DebitTransactionCount}");
+
+        Console.WriteLine();
+        Console.WriteLine("\n ¿Generar un nuevo reporte?");
+        Console.WriteLine("\nPresione la tecla: (C) para Continuar  / (T) para Terminar");
+        ConsoleKeyInfo keyInfo = Console.ReadKey();
+        switch (keyInfo.Key)
+        {
+            case ConsoleKey.C:
+                failureCount = 0;
+                dataExists = false;
+                transactions = [];
+                break;
+
+            case ConsoleKey.T:
+                Console.Clear();
+                Console.WriteLine("El programa fue finalizado.");
+                wantContinue = false;
+                break;
+        }
+    }
+
+} while (wantContinue);
+
+
+static string? FileLocationValidation()
+{
+    Console.Clear();
+    Console.WriteLine();
     Console.WriteLine("Por favor ingrese la ruta del archivo:");
     var fileLocation = $@"{Console.ReadLine()}";
 
-    fileExists = File.Exists(fileLocation);
-
-    if (fileExists) transactions = ProcessCsv.LoadFile(fileLocation);
-    Console.WriteLine("Solicitud incorrecta. El archivo no fue encontrado.");
-
-    fileExistCount++;
-    while (fileExistCount > 3)
+    if (!File.Exists(fileLocation))
     {
         Console.Clear();
-        Console.WriteLine("\nPresione la tecla: (Y) para volver intentar. / (N) para salir. ");
+        Console.WriteLine("Solicitud incorrecta. El archivo no fue encontrado.");
+        return null;
+    }
+
+    return fileLocation;
+}
+
+void RetryMenu()
+{
+    failureCount++;
+    while (failureCount > 3)
+    {
+        Console.Clear();
+        Console.WriteLine("\n ¿Quiere seguir intentado?");
+        Console.WriteLine("\nPresione la tecla: (S) para Si / (N) para No");
 
         ConsoleKeyInfo keyInfo = Console.ReadKey();
         switch (keyInfo.Key)
         {
             case ConsoleKey.Y:
-                fileExistCount = 0;
+                failureCount = 0;
                 break;
 
             case ConsoleKey.N:
-                fileExistCount = 0;
-                fileExists = true;
+                Console.Clear();
+                Console.WriteLine("El programa fue finalizado.");
+                failureCount = 0;
+                dataExists = true;
                 break;
         }
     }
 }
-
-
-
-string relativePath = "CsvFiles/transactions.csv";
-// string fileLocation = @"/Users/jorge/Documents/Developer/1_Owner/C#/RetoTecnicoCobol/CsvFiles/transactions.csv";
-// string fileLocation = @"C:\Users\AresR\Documents\Developer\1_Owner\5_Others\retotecnico-cobol\CsvFiles\transactions.csv";
-
-if (transactions.Count > 0)
-{
-    TransactionReport report = new(transactions);
-
-    Console.WriteLine("Reporte de Transacciones");
-    Console.WriteLine("--------------------------------------------");
-    Console.WriteLine($"Balance Final: {report.FinalBalance:F2}");
-    Console.WriteLine($"Transacción de Mayor Monto: ID {report?.HigherAmountTransaction?.Id} - {report?.HigherAmountTransaction?.Amount:F2}");
-    Console.WriteLine($"Conteo de Transacciones: Crédito: {report?.CreditTransactionCount} Débito: {report?.DebitTransactionCount}");
-}
-
