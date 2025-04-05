@@ -4,7 +4,15 @@
 **Plataforma:** .NET 9.0  
 **Tipo:** Herramienta Global .NET
 
-## 📦 Instalación
+## 1. Introducción
+
+La CLI procesa un archivos CSV con transacciones bancarias y genera un reporte que incluye:
+
+- **Balance Final**: Suma de los montos de las transacciones de tipo "Crédito" menos la suma de los montos de las transacciones de tipo "Débito".
+- **Transacción de Mayor Monto**: Identifica el monto de la transacción con el valor más alto y su ID.
+- **Conteo de Transacciones**: Número total de transacciones para cada tipo ("Crédito" y "Débito").
+
+## 2. Instalación
 
 ### Requisitos
 
@@ -13,7 +21,7 @@
 
 ### Instalación Global
 
-```bash
+````bash
 # 1. Empaquetar la aplicación
 dotnet pack
 
@@ -22,15 +30,25 @@ dotnet tool install --global --add-source ./nupkg RetoTecnicoCobol
 
 # 3. Verificar instalación
 retotecnico-cobol --version
-```
 
-## ❌ Desinstalación
+### Ejecución
+
+```bash
+# 1. Ejecutar la aplicación
+retotecnico-cobol
+
+# 2. Ingrese la ruta del archivo .csv y presione Enter. Por ejemplo:
+C:\RetoTecnicoCobol\CsvFiles\transactions.csv
+
+````
+
+### ❌ Desinstalación
 
 ```bash
 dotnet tool uninstall --global RetoTecnicoCobol
 ```
 
-## 📂 Estructura del Archivo CSV
+### 📂 Estructura del Archivo CSV
 
 La CLI espera archivos CSV con el siguiente formato:
 
@@ -40,3 +58,5 @@ id,tipo,monto
 2,Débito,50.00
 3,Crédito,200.00
 ```
+## 3. Enfoque y Solución
+- 

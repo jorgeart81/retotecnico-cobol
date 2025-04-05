@@ -27,16 +27,16 @@ do
     {
         var fileLocation = FileLocationValidation();
 
-        if (string.IsNullOrEmpty(fileLocation))
-        {
-            RetryMenu();
-        }
-        else
+        if (!string.IsNullOrEmpty(fileLocation))
         {
             transactions = ProcessCsv.LoadFile(fileLocation);
 
             if (transactions.Count > 0) dataExists = true;
             else Console.WriteLine("El archivo no fue procesado.");
+        }
+        else
+        {
+            RetryMenu();
         }
     }
 
@@ -64,40 +64,49 @@ do
                 break;
 
             case ConsoleKey.T:
-                Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("El programa fue finalizado.");
                 wantContinue = false;
                 break;
         }
     }
-
 } while (wantContinue);
 
 
-static string? FileLocationValidation()
+string? FileLocationValidation()
 {
-    Console.Clear();
     Console.WriteLine();
     Console.WriteLine("Por favor ingrese la ruta del archivo:");
     var fileLocation = $@"{Console.ReadLine()}";
 
-    if (!File.Exists(fileLocation))
+    string? message = true switch
     {
-        Console.Clear();
-        Console.WriteLine("Solicitud incorrecta. El archivo no fue encontrado.");
+        _ when string.IsNullOrWhiteSpace(fileLocation) => "Estructura inválida",
+        _ when !IsCsvFile(fileLocation) => "El archivo no es un CSV válido",
+        _ when !File.Exists(fileLocation) => "El archivo no existe",
+        _ => null
+    };
+
+    if (!string.IsNullOrEmpty(message))
+    {
+        ConsoleHelper.WriteError(message);
         return null;
     }
 
     return fileLocation;
 }
 
+bool IsCsvFile(string filePath)
+{
+    return Path.GetExtension(filePath).Equals(".csv", StringComparison.CurrentCultureIgnoreCase);
+}
+
 void RetryMenu()
 {
     failureCount++;
-    while (failureCount > 3)
+    while (failureCount >= 3)
     {
-        Console.Clear();
-        Console.WriteLine("\n ¿Quiere seguir intentado?");
+        Console.WriteLine("\nTiene 3 intentos fallidos ¿Quiere seguir intentado?");
         Console.WriteLine("\nPresione la tecla: (S) para Si / (N) para No");
 
         ConsoleKeyInfo keyInfo = Console.ReadKey();
@@ -108,7 +117,7 @@ void RetryMenu()
                 break;
 
             case ConsoleKey.N:
-                Console.Clear();
+                Console.WriteLine();
                 Console.WriteLine("El programa fue finalizado.");
                 failureCount = 0;
                 dataExists = true;
