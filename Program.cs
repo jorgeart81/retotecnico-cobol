@@ -1,7 +1,15 @@
 ﻿// See https://aka.ms/new-console-template for more information
+using System.Reflection;
 using RetoTecnicoCobol.src.Models;
 using RetoTecnicoCobol.src.Services;
 using RetoTecnicoCobol.src.Utils;
+
+if (args.Contains("--version") || args.Contains("-v"))
+{
+    var version = Assembly.GetEntryAssembly()?.GetName().Version?.ToString() ?? "1.0.0";
+    Console.WriteLine($"RetoTecnicoCobol CLI v{version}");
+    return;
+}
 
 Console.WriteLine();
 Console.WriteLine("*****************************************");
@@ -95,7 +103,7 @@ void RetryMenu()
         ConsoleKeyInfo keyInfo = Console.ReadKey();
         switch (keyInfo.Key)
         {
-            case ConsoleKey.Y:
+            case ConsoleKey.S:
                 failureCount = 0;
                 break;
 
@@ -104,6 +112,7 @@ void RetryMenu()
                 Console.WriteLine("El programa fue finalizado.");
                 failureCount = 0;
                 dataExists = true;
+                wantContinue = false;
                 break;
         }
     }
