@@ -59,4 +59,29 @@ id,tipo,monto
 3,Crédito,200.00
 ```
 ## 3. Enfoque y Solución
-- 
+- Validacion de la ruta del archivos CSV.
+- Lectura de archivo CSV.
+- Extracción y mapeo de la data según el formato especificado.
+- Procesamiento de la data para generar **Balance Final**, **Transacción de Mayor Monto** y **Conteo de Transacciones**
+- Impresión de resultados en la consola.
+
+## 4. Estructura del Proyecto
+
+### 🗂️ Directorios Principales
+```
+RetoTecnicoCobol/
+├── src/
+│   ├── Models/
+│   │   ├── TransactionModel.cs           # Modelo de transacción.
+│   ├── Services/
+│   │   ├── TransactionReport.cs          # Genera y muestra los reportes en la consola.
+│   │   ├── TransactionCalculation.cs     # Calculo de Balance Final, Transacción de Mayor Monto
+│   ├── Utils/                             y Conteo de Transacciones.
+│       ├── ConsoleHelper.cs
+│       ├── ProcessCsv.cs                 # Lectura, extracción y mapeo de data del csv.
+│    
+├── CsvFiles/
+│   ├── transaction.csv/                  # Archivo de ejemplo.
+│    
+└── README.md
+```
